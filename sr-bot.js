@@ -15,6 +15,29 @@ bot.on('message', async message => {
 });
 
 //functions
+
+function between(number, min, max){
+	return number >= min && number <= max;
+}
+
+function getRankEmote(sr){
+	if(between(sr, 0, 1499)){
+		return "<:ow_bronze:561738884409458701>";
+	}else if(between(sr, 1500, 1999)){
+		return "<:ow_silver:561738499611688971>";
+	}else if(between(sr, 2000, 2499)){
+		return "<:ow_gold:561738679220174878>";
+	}else if(between(sr, 2500, 2999)){
+		return "<:ow_plat:561737404097101833>";
+	}else if(between(sr, 3000, 3499)){
+		return "<:ow_diamond:561738187085578269>";
+	}else if(between(sr, 3500, 3999)){
+		return "<:ow_masters:561739221711192065>";
+	}else if(between(sr, 4000, 5000)){
+		return "<:ow_grand_masters:561751122952323083>";
+	}
+}
+
 /**
  * Returns a StringBuilder of the player's SR in descending order
  * @param {*} players List of players to build text from
@@ -24,7 +47,7 @@ function buildSRTextList(players) {
 	players.sort((a, b) => a.SR < b.SR);
 
 	for (let player of players) {
-		text.appendLine(`${player.player} (${player.SR}) ${player.private ? "[PRIVATE]" : ""}`);
+		text.appendLine(`${player.player} (${player.SR})${player.private ? " [PRIVATE]" : ""} ${getRankEmote(player.SR)}`);
 	}
 
 	text.appendLine();
