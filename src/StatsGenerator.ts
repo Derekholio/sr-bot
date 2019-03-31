@@ -84,7 +84,7 @@ export class StatsGenerator {
 
         const conditionalData: Partial<Player> = {};
         const player: OverwatchAPI.Profile|null = await this.getOverwatchProfileAsync(playerData.player).catch(err => {
-            console.error(err);
+            console.log(`Profile Not Found: ${playerData.player}`);
             return null;
         });
 
