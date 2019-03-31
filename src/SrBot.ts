@@ -4,6 +4,8 @@ import * as Discord from 'discord.js';
 import {getRankEmoji} from './utils/getRankEmoji';
 import {Player, PlayerFile} from './types';
 
+const PLAYER_FILE: string = './res/players.json';
+
 export type DiscordConfig = {
     token: string
 }
@@ -51,7 +53,7 @@ export class SrBot {
     private processTextChat(message: Discord.Message) {
         if (message.content.toLowerCase() === '!sr') {
             const serverId = message.member.guild.id;
-            const playerFile: PlayerFile = JSON.parse(fs.readFileSync('players.json', 'utf8'));
+            const playerFile: PlayerFile = JSON.parse(fs.readFileSync(PLAYER_FILE, 'utf8'));
             const requestedServer = playerFile.servers.find(server => serverId === server.id);
 
             console.log(requestedServer);
@@ -59,7 +61,7 @@ export class SrBot {
                 message.channel.send('Sorry, this server has no players associated.');
             } else {
                 const players = requestedServer.players;
-                const text = this.buildSRTextList(players);
+                let text = this.buildSRTextList(players);
 
                 if (requestedServer.targetSR) {
                     const playersCount = players.length;
@@ -71,12 +73,16 @@ export class SrBot {
                     console.log((target * (playersCount + 1)));
                     const max = Math.abs((average * playersCount) - (target * (playersCount + 1)));
 
-                    text.concat(`\n Average SR: ${average}`);
-                    text.concat(`\n Target SR: ${target}`);
-                    text.concat(`\n Max add: ${max}`);
+                    text += `\n Average SR: ${average}`;
+                    text += `\n Target SR: ${target}`;
+                    text += `\n Max add: ${max}`;
                 } else {
+                    console.log('here');
                     const average = this.calculateAverageSR(players);
-                    text.concat(`\n Average SR: ${average}`);
+                    console.log(`Average: ${average}`);
+                    console.log(text);
+                    text += `\n Average SR: ${average}`;
+                    console.log(text);
                 }
 
                 message.channel.send(text);
