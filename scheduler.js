@@ -25,18 +25,6 @@ async function getOverwatchProfileAsync(player) {
     })
 }
 
-// async function processServerAsync(server){
-//     return new Promise((resolve, reject) => {
-//         var players = server.players;
-//         var playersData = await Promise.all(players.map(player => getOverwatchProfileAsync(player).catch(err => { console.log(err); }))).catch(err => { throw new Error(err) });
-//         if (error) { reject(error); }
-
-//         if(!error){
-//             resolve(playersData);
-//         }
-//     });
-// }
-
 async function main() {
     // Loads in the players.json.  Assuming the file looks like JSON{players: [{...}, {...}, {...}]}
     const servers = JSON.parse(fs.readFileSync('players.json', 'utf8'));
