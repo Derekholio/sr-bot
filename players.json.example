@@ -1,0 +1,11 @@
+[
+    {
+        "id":"DISCORD_SERVER_ID",
+        "players": [
+            {"SR":0,"player":"Player1#1111","private":false},
+            {"SR":1844,"player":"PhilNye#11822","private":false},
+            {"SR":2248,"player":"jlott91#1154","private":false}
+        ],
+        "targetSR":YOUR_TARGET_SR
+    }
+]
