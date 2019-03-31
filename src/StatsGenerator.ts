@@ -1,27 +1,61 @@
 import * as overwatch from 'overwatch-api';
-import {PlayerFile, Player, Server} from './types';
+import {OverwatchConfig, Player, Server} from './types';
+import {getJsonFile} from './utils/getJsonFile';
+import {writeJsonFile} from './utils/writeJsonFile';
 
 export class StatsGenerator {
-    private region: OverwatchAPI.REGION;
-    private platform: OverwatchAPI.PLATFORM;
+    private config: {path: string, data: OverwatchConfig};
+    private lastResult: OverwatchConfig;
 
-    constructor(region: OverwatchAPI.REGION, platform: OverwatchAPI.PLATFORM) {
-        this.region = region;
-        this.platform = platform;
+    constructor(configPath: string) {
+        this.config = {
+            path: configPath,
+            data: getJsonFile(configPath)
+        };
+
+        this.lastResult = this.config.data;
+        this.fetchAndWrite();
+    }
+
+    /**
+     * Returns the last cached stats result.  Updated on every fetch call.
+     */
+    public getLastResult() {
+        return this.lastResult;
+    }
+
+    /**
+     * Fetches updated stats and writes them to file.  Use fetch() for data only.
+     */
+    public async fetchAndWrite(): Promise<void> {
+        console.log(`Updating players in file ${this.config.path}`);
+
+        const results = await this.fetch();
+        writeJsonFile(this.config.path, results);
+        console.log('Done!');
     }
 
     /**
      * Returns updated player information based on the provided player file
-     * @param fileData The loaded player file data
      */
-    public async fetch(fileData: PlayerFile): Promise<PlayerFile> {
-        const updates: Server[] = await Promise.all(fileData.servers.map((server) => this.processServer(server)))
+    public async fetch(): Promise<OverwatchConfig> {
+        const updates: Server[] = await Promise.all(this.config.data.servers.map((server) => this.processServer(server)))
             .catch((err) => {
                 throw new Error(err);
             });
 
-        return {...fileData, servers: updates};
+        return this.lastResult = {...this.config.data, servers: updates, timestamp: Date.now()};
     }
+
+    /**
+     * Starts the automatic fetchAndWrite timer.
+     */
+    public startTimer(timeout: number = 60 * 60 * 1000) {
+        setTimeout(() => {
+            this.fetchAndWrite();
+        }, timeout);
+    }
+
 
     /**
      * Gets user data from overwatch API
@@ -29,7 +63,7 @@ export class StatsGenerator {
      */
     private async getOverwatchProfileAsync(playerId: string) {
         return new Promise<OverwatchAPI.Profile>((resolve, reject) => {
-            overwatch.getProfile(this.platform, this.region, playerId.replace('#', '-'), (error, data) => {
+            overwatch.getProfile(this.config.data.platform, this.config.data.region, playerId.replace('#', '-'), (error, data) => {
                 if (error) {
                     reject(error);
                 } else {

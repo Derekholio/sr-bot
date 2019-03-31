@@ -2,20 +2,20 @@ import * as fs from 'fs';
 import * as Discord from 'discord.js';
 
 import {getRankEmoji} from './utils/getRankEmoji';
-import {Player, PlayerFile} from './types';
+import {Player, OverwatchConfig, DiscordConfig, ConfigurationLoc} from './types';
 import {getJsonFile} from './utils/getJsonFile';
 
-import {CONFIG} from './index';
-
-export type DiscordConfig = {
-    token: string
-}
+import {StatsGenerator} from './StatsGenerator';
 
 export class SrBot {
     private client: Discord.Client;
+    private statsGenerator: StatsGenerator;
 
-    constructor(config: DiscordConfig) {
-        this.client = this.initializeClient(config);
+    constructor(configs: ConfigurationLoc) {
+        this.statsGenerator = new StatsGenerator(configs.overwatch);
+        this.statsGenerator.startTimer();
+
+        this.client = this.initializeClient(getJsonFile(configs.discord));
     }
 
     /**
@@ -54,8 +54,7 @@ export class SrBot {
     private processTextChat(message: Discord.Message) {
         if (message.content.toLowerCase() === '!sr') {
             const serverId = message.member.guild.id;
-            const playerFile: PlayerFile = getJsonFile<PlayerFile>(CONFIG.PLAYER);
-            const requestedServer = playerFile.servers.find(server => serverId === server.id);
+            const requestedServer = this.statsGenerator.getLastResult().servers.find(server => serverId === server.id);
 
             console.log(requestedServer);
             if (!requestedServer) {

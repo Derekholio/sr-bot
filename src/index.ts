@@ -1,50 +1,35 @@
 #!/usr/bin/env node
-
-import * as fs from 'fs';
 import * as path from 'path';
 import * as program from 'commander';
-
-import {SrBot, DiscordConfig} from './SrBot';
+import {SrBot} from './SrBot';
 import {StatsGenerator} from './StatsGenerator';
-import {PlayerFile} from './types';
-import {getJsonFile} from './utils/getJsonFile';
+import {ConfigurationLoc} from './types';
 
 /**
  * Configuration file locations
  */
-export const CONFIG = {
+const configs: ConfigurationLoc = {
     /**
      * Player Configuration
      */
-    PLAYER: './res/players.json',
+    overwatch: path.resolve('./res/overwatch.json'),
     /**
      * Discord Configuration
      */
-    DISCORD: './res/config.json'
+    discord: path.resolve('./res/discord.json')
 };
 
 program
     .command('start')
     .action(() => {
-        const config: DiscordConfig = getJsonFile<DiscordConfig>(CONFIG.DISCORD);
-        const bot = new SrBot(config);
+        const bot = new SrBot(configs);
     });
 
 program
     .command('generate')
     .action(() => {
-        const resolvedFilePath = path.resolve(CONFIG.PLAYER);
-        const playerStats = new StatsGenerator('us', 'pc');
-
-        console.log(`Updating players in file ${resolvedFilePath}`);
-
-        const fileData: PlayerFile = getJsonFile<PlayerFile>(CONFIG.DISCORD);
-        playerStats.fetch(fileData)
-            .then((writeOut: PlayerFile) => fs.writeFileSync(resolvedFilePath, JSON.stringify(writeOut, null, 4), 'utf8'))
-            .then(() => console.log('Done!'))
-            .catch(err => {
-                throw new Error(err);
-            });
+        const statsGenerator = new StatsGenerator(configs.overwatch);
+        statsGenerator.startTimer();
     });
 
 program.parse(process.argv);

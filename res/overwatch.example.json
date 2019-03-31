@@ -1,4 +1,7 @@
 {
+    "timestamp": 0,
+    "platform": "pc",
+    "region": "us",
     "servers": [
         {
             "id": "DISCORD_SERVER_ID",
