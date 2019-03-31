@@ -1,0 +1,45 @@
+{
+    "servers": [
+        {
+            "id": "DISCORD_SERVER_ID",
+            "players": [
+                {
+                    "SR": 0,
+                    "player": "ExampleBronze#1111",
+                    "private": true
+                },
+                {
+                    "SR": 1500,
+                    "player": "ExampleSilver#1111",
+                    "private": true
+                },
+                {
+                    "SR": 2000,
+                    "player": "ExampleGold#1111",
+                    "private": true
+                },
+                {
+                    "SR": 2500,
+                    "player": "ExamplePlat#1111",
+                    "private": false
+                },
+                {
+                    "SR": 3000,
+                    "player": "ExampleDiamond#1111",
+                    "private": false
+                },
+                {
+                    "SR": 3500,
+                    "player": "ExampleMasters#1111",
+                    "private": false
+                },
+                {
+                    "SR": 4000,
+                    "player": "ExampleGM#1111",
+                    "private": false
+                }
+            ],
+            "targetSR": null
+        }
+    ]
+}

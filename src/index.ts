@@ -9,7 +9,7 @@ import {StatsGenerator} from './StatsGenerator';
 import {PlayerFile} from './types';
 
 const PLAYER_FILE: string = './res/players.json';
-const DISCORD_CONFIG: string = './res/config.example.json';
+const DISCORD_CONFIG: string = './res/config.json';
 
 program
     .command('start')
