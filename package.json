@@ -1,8 +1,8 @@
 {
-  "name": "scraw-api",
+  "name": "sr-bot",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Automatically updates Overwatch players SRs from config",
+  "main": "dist/index.js",
   "scripts": {
     "build": "npm run clean && tsc -p tsconfig.json",
     "clean": "rimraf dist",
@@ -13,12 +13,12 @@
     "fix": "eslint src --ext .ts --fix"
   },
   "bin": {
-    "scraw-api-update": "dist/index.js"
+    "sr-bot": "dist/index.js"
   },
   "files": [
     "dist"
   ],
-  "author": "",
+  "author": "Derek Sims (SCRAWCHIMARI#1144)",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^11.12.2",
