@@ -49,12 +49,17 @@ export class StatsGenerator {
         }
 
         const conditionalData: Partial<Player> = {};
-        const player: OverwatchAPI.Profile = await this.getOverwatchProfileAsync(playerData.player);
+        const player: OverwatchAPI.Profile|null = await this.getOverwatchProfileAsync(playerData.player).catch(err => {
+            console.error(err);
+            return null;
+        });
 
-        if (player.competitive.rank && player.competitive.rank > 0) {
-            conditionalData.SR = player.competitive.rank;
-        } else {
-            conditionalData.private = true;
+        if (player){
+            if (player.competitive.rank && player.competitive.rank > 0) {
+                conditionalData.SR = player.competitive.rank;
+            } else {
+                conditionalData.private = true;
+            }
         }
 
         return {...playerData, ...conditionalData};
