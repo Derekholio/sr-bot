@@ -20,7 +20,7 @@ function between(number, min, max){
 	return number >= min && number <= max;
 }
 
-function getRankEmote(sr){
+function getRankEmoji(sr){
 	if(between(sr, 0, 1499)){
 		return "<:ow_bronze:561738884409458701>";
 	}else if(between(sr, 1500, 1999)){
@@ -47,7 +47,7 @@ function buildSRTextList(players) {
 	players.sort((a, b) => a.SR < b.SR);
 
 	for (let player of players) {
-		text.appendLine(`${player.player} (${player.SR})${player.private ? " [PRIVATE]" : ""} ${getRankEmote(player.SR)}`);
+		text.appendLine(`${player.player} (${player.SR})${player.private ? " [PRIVATE]" : ""} ${getRankEmoji(player.SR)}`);
 	}
 
 	text.appendLine();
