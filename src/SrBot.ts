@@ -77,12 +77,8 @@ export class SrBot {
                     text += `\n Target SR: ${target}`;
                     text += `\n Max add: ${max}`;
                 } else {
-                    console.log('here');
                     const average = this.calculateAverageSR(players);
-                    console.log(`Average: ${average}`);
-                    console.log(text);
                     text += `\n Average SR: ${average}`;
-                    console.log(text);
                 }
 
                 message.channel.send(text);
