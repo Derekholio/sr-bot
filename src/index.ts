@@ -29,7 +29,6 @@ program
     .command('generate')
     .action(() => {
         const statsGenerator = new StatsGenerator(configs.overwatch);
-        statsGenerator.startTimer();
     });
 
 program.parse(process.argv);

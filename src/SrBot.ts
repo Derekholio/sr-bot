@@ -1,10 +1,7 @@
-import * as fs from 'fs';
 import * as Discord from 'discord.js';
-
 import {getRankEmoji} from './utils/getRankEmoji';
-import {Player, OverwatchConfig, DiscordConfig, ConfigurationLoc} from './types';
+import {Player, DiscordConfig, ConfigurationLoc} from './types';
 import {getJsonFile} from './utils/getJsonFile';
-
 import {StatsGenerator} from './StatsGenerator';
 
 export class SrBot {
