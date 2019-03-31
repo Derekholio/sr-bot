@@ -3,8 +3,9 @@ import * as Discord from 'discord.js';
 
 import {getRankEmoji} from './utils/getRankEmoji';
 import {Player, PlayerFile} from './types';
+import {getJsonFile} from './utils/getJsonFile';
 
-const PLAYER_FILE: string = './res/players.json';
+import {CONFIG} from './index';
 
 export type DiscordConfig = {
     token: string
@@ -53,7 +54,7 @@ export class SrBot {
     private processTextChat(message: Discord.Message) {
         if (message.content.toLowerCase() === '!sr') {
             const serverId = message.member.guild.id;
-            const playerFile: PlayerFile = JSON.parse(fs.readFileSync(PLAYER_FILE, 'utf8'));
+            const playerFile: PlayerFile = getJsonFile<PlayerFile>(CONFIG.PLAYER);
             const requestedServer = playerFile.servers.find(server => serverId === server.id);
 
             console.log(requestedServer);
