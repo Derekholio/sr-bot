@@ -54,7 +54,7 @@ export class StatsGenerator {
     /**
      * Starts the automatic fetchAndWrite timer.
      */
-    public startTimer(timeout: number = 60 * 60 * 1000) {
+    public startTimer(timeout: number = 30* 1000) {
         setTimeout(() => {
             this.fetchAndWrite();
         }, timeout);
@@ -97,7 +97,7 @@ export class StatsGenerator {
                 conditionalData.SR = player.competitive.rank;
                 if (player.competitive.rank !== playerData.SR) {
                     const change = (playerData.SR - player.competitive.rank) * -1;
-                    log('UPDATE', `${player.username} SR Change: ${change < 0 ? '+' : ''}${change}`);
+                    log('UPDATE', `${player.username} SR Change: ${change > 0 ? '+' : ''}${change}`);
                 }
             } else {
                 conditionalData.private = true;
