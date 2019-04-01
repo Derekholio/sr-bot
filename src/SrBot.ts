@@ -93,9 +93,9 @@ export class SrBot {
      */
     private appendPlayersToEmbed(players: Player[], embed: Discord.RichEmbed) {
         players.sort((a: Player, b: Player) => (a.SR < b.SR) ? 1 : -1)
-        .forEach((player) => {
-            embed = embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
-        });
+            .forEach((player) => {
+                embed = embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
+            });
 
         return embed;
     }
