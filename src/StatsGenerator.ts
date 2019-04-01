@@ -1,5 +1,5 @@
 import * as overwatch from 'overwatch-api';
-import {OverwatchConfig, Player, Server} from './types';
+import {OverwatchConfig, Player, Server, Locale} from './types';
 import {getJsonFile} from './utils/getJsonFile';
 import {writeJsonFile} from './utils/writeJsonFile';
 
@@ -61,9 +61,9 @@ export class StatsGenerator {
      * Gets user data from overwatch API
      * @param {string} player Player username
      */
-    private async getOverwatchProfileAsync(playerId: string) {
+    private async getOverwatchProfileAsync(playerId: string, serverInfo: Locale) {
         return new Promise<OverwatchAPI.Profile>((resolve, reject) => {
-            overwatch.getProfile(this.config.data.platform, this.config.data.region, playerId.replace('#', '-'), (error, data) => {
+            overwatch.getProfile(serverInfo.platform, serverInfo.region, playerId.replace('#', '-'), (error, data) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -75,15 +75,15 @@ export class StatsGenerator {
 
     /**
      * Combine old player data with new API player data
-     * @param {*} playerData Player object from data file
+     * @param {Player} playerData Player object from data file
      */
-    private async collatePlayerData(playerData: Player): Promise<Player> {
+    private async collatePlayerData(playerData: Player, locale: Locale): Promise<Player> {
         if (!playerData.player) {
             throw new Error(`Missing username! ${playerData}`);
         }
 
         const conditionalData: Partial<Player> = {};
-        const player: OverwatchAPI.Profile|null = await this.getOverwatchProfileAsync(playerData.player).catch(err => {
+        const player: OverwatchAPI.Profile|null = await this.getOverwatchProfileAsync(playerData.player, locale).catch(err => {
             console.log(`Profile Not Found: ${playerData.player}`);
             return null;
         });
@@ -91,6 +91,9 @@ export class StatsGenerator {
         if (player){
             if (player.competitive.rank && player.competitive.rank > 0) {
                 conditionalData.SR = player.competitive.rank;
+                if (player.competitive.rank !== playerData.SR) {
+                    console.log(`${player.username} SR: ${(playerData.SR - player.competitive.rank) * -1}`);
+                }
             } else {
                 conditionalData.private = true;
             }
@@ -101,10 +104,12 @@ export class StatsGenerator {
 
     /**
      * Process each player of the server object
-     * @param {*} server Server object from data file
+     * @param {Server} server Server object from data file
      */
     private async processServer(server: Server): Promise<Server> {
-        const players: Player[] = await Promise.all(server.players.map((player) => this.collatePlayerData(player)));
+        const players: Player[] = await Promise.all(server.players.map((player) => {
+            return this.collatePlayerData(player, {platform: server.platform, region: server.region});
+        }));
 
         return {...server, players};
     }

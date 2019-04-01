@@ -10,20 +10,25 @@ export type Player = {
 /**
  * Server level configuration
  */
-export type Server = {
+export interface Server extends Locale {
     id: string;
     players: Player[];
     targetSR: number;
 }
 
+/**
+ * Locale information for a server or player
+ */
+export type Locale = {
+    platform: OverwatchAPI.PLATFORM;
+    region: OverwatchAPI.REGION;
+}
 
 /**
  * Shape of the player configuration file
  */
 export type OverwatchConfig = {
     timestamp: number;
-    region: OverwatchAPI.REGION;
-    platform: OverwatchAPI.PLATFORM;
     servers: Server[];
 }
 
@@ -40,3 +45,4 @@ export type ConfigurationLoc ={
     overwatch: string;
     discord: string;
 }
+
