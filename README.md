@@ -1,6 +1,9 @@
-### To Run
+# SR-Bot
+Integrates Overwatch into Discord.  Keeps track of SR and more!
 
+### To Run
 ```
-npm run start - for bot
-npm run start:generate - for cron job to update players
+npm start - Launches the bot process and kicks off a update request.  Will continue to update once every hour.
+npm run start:generate - Runs a one time update request.
+npm run fix - Lints the project
 ```
