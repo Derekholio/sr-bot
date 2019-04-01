@@ -54,7 +54,7 @@ export class StatsGenerator {
     /**
      * Starts the automatic fetchAndWrite timer.
      */
-    public startTimer(timeout: number = 30* 1000) {
+    public startTimer(timeout: number = 60 * 60 * 1000) {
         setTimeout(() => {
             this.fetchAndWrite();
         }, timeout);
