@@ -1,6 +1,6 @@
 {
   "name": "sr-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automatically updates Overwatch players SRs from config",
   "main": "dist/index.js",
   "scripts": {
