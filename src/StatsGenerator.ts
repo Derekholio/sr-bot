@@ -2,6 +2,7 @@ import * as overwatch from 'overwatch-api';
 import {OverwatchConfig, Player, Server, Locale} from './types';
 import {getJsonFile} from './utils/getJsonFile';
 import {writeJsonFile} from './utils/writeJsonFile';
+import {log} from './utils/logger';
 
 export class StatsGenerator {
     private config: {path: string, data: OverwatchConfig};
@@ -28,11 +29,14 @@ export class StatsGenerator {
      * Fetches updated stats and writes them to file.  Use fetch() for data only.
      */
     public async fetchAndWrite(): Promise<void> {
-        console.log(`Updating players in file ${this.config.path}`);
+        const start = Date.now();
+        log('UPDATE', `Begin update on ${this.config.path}`);
 
         const results = await this.fetch();
         writeJsonFile(this.config.path, results);
-        console.log('Done!');
+
+        const end = Date.now();
+        log('UPDATE', `Finished update! Took ${(end - start) / 1000}s`);
     }
 
     /**
@@ -84,7 +88,7 @@ export class StatsGenerator {
 
         const conditionalData: Partial<Player> = {};
         const player: OverwatchAPI.Profile|null = await this.getOverwatchProfileAsync(playerData.player, locale).catch(err => {
-            console.log(`Profile Not Found: ${playerData.player}`);
+            log('UPDATE', `${playerData.player} not found!`);
             return null;
         });
 
@@ -92,7 +96,8 @@ export class StatsGenerator {
             if (player.competitive.rank && player.competitive.rank > 0) {
                 conditionalData.SR = player.competitive.rank;
                 if (player.competitive.rank !== playerData.SR) {
-                    console.log(`${player.username} SR: ${(playerData.SR - player.competitive.rank) * -1}`);
+                    const change = (playerData.SR - player.competitive.rank) * -1;
+                    log('UPDATE', `${player.username} SR Change: ${change > 0 ? '+' : ''}${change}`);
                 }
             } else {
                 conditionalData.private = true;

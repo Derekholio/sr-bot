@@ -3,6 +3,7 @@ import {getRankEmoji} from './utils/getRankEmoji';
 import {Player, DiscordConfig, ConfigurationLoc} from './types';
 import {getJsonFile} from './utils/getJsonFile';
 import {StatsGenerator} from './StatsGenerator';
+import {log} from './utils/logger';
 
 export class SrBot {
     private client: Discord.Client;
@@ -20,13 +21,13 @@ export class SrBot {
      * @param config Loaded dicord config file data
      */
     private initializeClient(config: DiscordConfig) {
-        console.log('Initializing Discord Client');
+        log('CLIENT', 'Initializing Discord Client');
         const client = new Discord.Client();
 
         client.login(config.token)
             .then(() => {
                 client.on('message', message => this.onClientMessageHandler(message));
-                console.log('Discord Client Successfully Initialized');
+                log('CLIENT', 'Discord Client Successfully Initialized');
             });
 
         return client;
@@ -50,10 +51,10 @@ export class SrBot {
      */
     private processTextChat(message: Discord.Message) {
         if (message.content.toLowerCase() === '!sr') {
+            log('CLIENT', `New request from ${message.author.username}`);
             const serverId = message.member.guild.id;
             const requestedServer = this.statsGenerator.getLastResult().servers.find(server => serverId === server.id);
 
-            console.log(requestedServer);
             if (!requestedServer) {
                 message.channel.send('Sorry, this server has no players associated.');
             } else {
@@ -63,21 +64,18 @@ export class SrBot {
                 if (requestedServer.targetSR) {
                     const playersCount = players.length;
                     const average = this.calculateAverageSR(players);
-
                     const target = requestedServer.targetSR;
-
-                    console.log((average * playersCount));
-                    console.log((target * (playersCount + 1)));
                     const max = Math.abs((average * playersCount) - (target * (playersCount + 1)));
 
-                    text += `\n Average SR: ${average}`;
-                    text += `\n Target SR: ${target}`;
-                    text += `\n Max add: ${max}`;
+                    text += `\nAverage SR: ${average}`;
+                    text += `\nTarget SR: ${target}`;
+                    text += `\nMax add: ${max}`;
                 } else {
                     const average = this.calculateAverageSR(players);
-                    text += `\n Average SR: ${average}`;
+                    text += `\nAverage SR: ${average}`;
                 }
 
+                log('CLIENT', `Sent to Chat: ${text}`);
                 message.channel.send(text);
             }
         }
@@ -90,7 +88,7 @@ export class SrBot {
     private buildSRTextList(players: Player[]) {
         return players.sort((a: Player, b: Player) => (a.SR < b.SR) ? 1 : -1)
             .reduce((accumulated, current) => {
-                const text = `\n ${current.player} (${current.SR})${current.private ? ' [PRIVATE]' : ''} ${getRankEmoji(current.SR)}`;
+                const text = `\n${current.player} (${current.SR})${current.private ? ' [PRIVATE]' : ''} ${getRankEmoji(current.SR)}`;
                 return accumulated.concat(text);
             }, '');
     }
