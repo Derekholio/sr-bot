@@ -1,7 +1,10 @@
 {
+    "timestamp": 0,
     "servers": [
         {
             "id": "DISCORD_SERVER_ID",
+            "platform": "PLATFORM",
+            "region": "REGION",
             "players": [
                 {
                     "SR": 0,
