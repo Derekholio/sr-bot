@@ -26,6 +26,13 @@ export class StatsGenerator {
     }
 
     /**
+     * Returns last update time
+     */
+    public getLastUpdate(){
+        return this.lastResult.timestamp;
+    }
+
+    /**
      * Fetches updated stats and writes them to file.  Use fetch() for data only.
      */
     public async fetchAndWrite(): Promise<void> {

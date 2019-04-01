@@ -14,6 +14,7 @@ export interface Server extends Locale {
     id: string;
     players: Player[];
     targetSR: number;
+    teamName: string;
 }
 
 /**
@@ -45,4 +46,3 @@ export type ConfigurationLoc ={
     overwatch: string;
     discord: string;
 }
-

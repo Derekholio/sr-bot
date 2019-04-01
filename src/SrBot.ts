@@ -5,6 +5,8 @@ import {getJsonFile} from './utils/getJsonFile';
 import {StatsGenerator} from './StatsGenerator';
 import {log} from './utils/logger';
 
+const HEX_EMBED_COLOR = 0x0019FF;
+
 export class SrBot {
     private client: Discord.Client;
     private statsGenerator: StatsGenerator;
@@ -59,7 +61,12 @@ export class SrBot {
                 message.channel.send('Sorry, this server has no players associated.');
             } else {
                 const players = requestedServer.players;
-                let text = this.buildSRTextList(players);
+                let embed = new Discord.RichEmbed()
+                    .setTitle(`Leaderboard: ${requestedServer.teamName}`)
+                    .setColor(HEX_EMBED_COLOR)
+                    .setFooter(`Last updated: ${new Date(this.statsGenerator.getLastUpdate())}`)
+                    .setAuthor('SR Bot', undefined, 'https://github.com/Derekholio/sr-bot');
+                embed = this.appendPlayersToEmbed(players, embed);
 
                 if (requestedServer.targetSR) {
                     const playersCount = players.length;
@@ -67,30 +74,30 @@ export class SrBot {
                     const target = requestedServer.targetSR;
                     const max = Math.abs((average * playersCount) - (target * (playersCount + 1)));
 
-                    text += `\nAverage SR: ${average}`;
-                    text += `\nTarget SR: ${target}`;
-                    text += `\nMax add: ${max}`;
+                    embed.addField('Team Stats', `Average SR: ${average}\nTarget SR: ${target}\nMax add: ${max}`);
                 } else {
                     const average = this.calculateAverageSR(players);
-                    text += `\nAverage SR: ${average}`;
+                    embed.addField('Team Stats', `Average SR: ${average}`);
                 }
 
-                log('CLIENT', `Sent to Chat: ${text}`);
-                message.channel.send(text);
+                log('CLIENT', `Sent embed to chat: ${JSON.stringify(embed)}`);
+                message.channel.send({embed});
             }
         }
     }
 
     /**
      * Returns a StringBuilder of the player's SR in descending order
-     * @param {*} players List of players to build text from
+     * @param {Player[]} players List of players to build text from
+     * @param {Discord.RichEmbed} embed Existing embed to append to
      */
-    private buildSRTextList(players: Player[]) {
-        return players.sort((a: Player, b: Player) => (a.SR < b.SR) ? 1 : -1)
-            .reduce((accumulated, current) => {
-                const text = `\n${current.player} (${current.SR})${current.private ? ' [PRIVATE]' : ''} ${getRankEmoji(current.SR)}`;
-                return accumulated.concat(text);
-            }, '');
+    private appendPlayersToEmbed(players: Player[], embed: Discord.RichEmbed) {
+        players.sort((a: Player, b: Player) => (a.SR < b.SR) ? 1 : -1)
+        .forEach((player) => {
+            embed = embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
+        });
+
+        return embed;
     }
 
     /**
