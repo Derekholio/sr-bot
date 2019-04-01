@@ -20,15 +20,21 @@
   ],
   "author": "Derek Sims (SCRAWCHIMARI#1144)",
   "license": "ISC",
+  "dependencies": {
+    "commander": "^2.19.0",
+    "discord.js": "^11.4.2",
+    "overwatch-api": "^0.7.5"
+  },
   "devDependencies": {
     "@types/node": "^11.12.2",
     "@typescript-eslint/parser": "^1.5.0",
-    "commander": "^2.19.0",
-    "discord.js": "^11.4.2",
     "eslint": "^5.16.0",
     "gts": "^0.9.0",
-    "overwatch-api": "^0.7.5",
+    "pre-commit": "^1.2.2",
     "rimraf": "^2.6.3",
     "typescript": "~3.3.3333"
-  }
+  },
+  "pre-commit": [
+    "check"
+  ]
 }
