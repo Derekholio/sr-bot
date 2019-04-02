@@ -1,5 +1,3 @@
-import {between} from './between';
-
 export function getRankEmoji(sr: number) {
     if (between(sr, 0, 1499)) {
         return '<:ow_bronze:561738884409458701>';
@@ -18,4 +16,8 @@ export function getRankEmoji(sr: number) {
     } else {
         return null;
     }
+}
+
+function between(number: number, min: number, max: number) {
+    return number >= min && number <= max;
 }
