@@ -14,6 +14,13 @@ steps:
   inputs:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/drop/res/discord.json'
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/drop/res/discord.example.json'
+    TargetFolder: '$(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/drop/res/discord.json'
+    
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(System.DefaultWorkingDirectory)'
