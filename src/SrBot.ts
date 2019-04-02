@@ -1,9 +1,10 @@
 import * as Discord from 'discord.js';
 import {getRankEmoji} from './utils/getRankEmoji';
-import {Player, DiscordConfig, ConfigurationLoc} from './types';
+import {DiscordConfig, ConfigurationLoc} from './types';
 import {getJsonFile} from './utils/getJsonFile';
 import {StatsGenerator} from './StatsGenerator';
 import {log} from './utils/logger';
+import {calculateAverageSR} from './calculateAverageSr';
 
 /**
  * Defines the Hex color used in the Discord embed message
@@ -33,6 +34,10 @@ export class SrBot {
             .then(() => {
                 client.on('message', message => this.onClientMessageHandler(message));
                 log('CLIENT', 'Discord Client Successfully Initialized');
+            })
+            .catch(err => {
+                log('CLIENT ERROR', 'Error on client login');
+                throw new Error(err);
             });
 
         return client;
@@ -54,7 +59,7 @@ export class SrBot {
      * Processes a Discord message
      * @param {*} message
      */
-    private processTextChat(message: Discord.Message) {
+    private processTextChat(message: Discord.Message): void {
         if (message.content.toLowerCase() === '!sr') {
             log('CLIENT', `New request from ${message.author.username}`);
             const serverId = message.member.guild.id;
@@ -64,6 +69,8 @@ export class SrBot {
                 message.channel.send('Sorry, this server has no players associated.');
             } else {
                 const players = requestedServer.players;
+
+                // Embed Construction
                 const embed = new Discord.RichEmbed()
                     .setTitle(`Leaderboard: ${requestedServer.teamName}`)
                     .setColor(HEX_EMBED_COLOR)
@@ -74,33 +81,23 @@ export class SrBot {
                     embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
                 });
 
+                // Team Stats Construction
+                const average = calculateAverageSR(players);
+                let teamStatsMessage = `Average SR: ${average}`;
+
                 if (requestedServer.targetSR) {
                     const playersCount = players.length;
-                    const average = this.calculateAverageSR(players);
                     const target = requestedServer.targetSR;
                     const max = Math.abs((average * playersCount) - (target * (playersCount + 1)));
-
-                    embed.addField('Team Stats', `Average SR: ${average}\nTarget SR: ${target}\nMax add: ${max}`);
-                } else {
-                    const average = this.calculateAverageSR(players);
-                    embed.addField('Team Stats', `Average SR: ${average}`);
+                    teamStatsMessage += `\nTarget SR: ${target}\nMax add: ${max}`;
                 }
+                embed.addField('Team Stats', teamStatsMessage);
 
+                // Send message to discord
                 log('CLIENT', `Sent embed to chat: ${JSON.stringify(embed)}`);
                 message.channel.send({embed});
             }
         }
-    }
-
-    /**
-     * Returns average SR for given players
-     * @param {Player[]} players Players to calculate SR for
-     */
-    private calculateAverageSR(players: Player[]) {
-        const playersCount = players.length;
-        const totalSR = players.reduce((accumlated, current) => accumlated + current.SR, 0);
-
-        return Math.round(totalSR / playersCount);
     }
 }
 
