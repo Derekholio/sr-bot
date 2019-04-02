@@ -15,11 +15,11 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
-- task: CopyFiles@2
-  displayName: 'Copy Files to: $(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/res/discord.json'
+- task: KirKone.fileoperations.rename.rename@0
+  displayName: 'rename: $(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/drop/res/discord.example.json'
   inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)/res/discord.example.json'
-    TargetFolder: '$(System.DefaultWorkingDirectory)/res/discord.json'
+    SourceFile: '$(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/res/discord.example.json'
+    NewName: discord.json
     
 - task: PublishBuildArtifacts@1
   inputs:
