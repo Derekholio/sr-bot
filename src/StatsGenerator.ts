@@ -3,6 +3,7 @@ import {OverwatchConfig, Player, Server, Locale} from './types';
 import {getJsonFile} from './utils/getJsonFile';
 import {writeJsonFile} from './utils/writeJsonFile';
 import {log} from './utils/logger';
+import {sortBy} from './utils/sortBy';
 
 export class StatsGenerator {
     private config: {path: string, data: OverwatchConfig};
@@ -116,7 +117,7 @@ export class StatsGenerator {
             return this.collatePlayerData(player, {platform: server.platform, region: server.region});
         }));
 
-        return {...server, players};
+        return {...server, players: sortBy<Player>(players, 'SR')};
     }
 }
 
