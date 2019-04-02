@@ -18,8 +18,8 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/res/discord.json'
   inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/res/discord.example.json'
-    TargetFolder: '$(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/res/discord.json'
+    SourceFolder: '$(System.DefaultWorkingDirectory)/res/discord.example.json'
+    TargetFolder: '$(System.DefaultWorkingDirectory)/res/discord.json'
     
 - task: PublishBuildArtifacts@1
   inputs:
