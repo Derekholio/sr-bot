@@ -67,6 +67,7 @@ export class SrBot {
 
             if (!requestedServer) {
                 message.channel.send('Sorry, this server has no players associated.');
+                return;
             } else {
                 const players = requestedServer.players;
 
