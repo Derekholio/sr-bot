@@ -1,4 +1,4 @@
-import {Player} from './types';
+import {Player} from '../types';
 
 /**
     * Returns average SR for given players
