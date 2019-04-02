@@ -16,9 +16,9 @@ steps:
   displayName: 'Install Node.js'
 
 - task: KirKone.fileoperations.rename.rename@0
-  displayName: 'rename: $(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/drop/res/discord.example.json'
+  displayName: 'rename: $(System.DefaultWorkingDirectory)/res/discord.example.json'
   inputs:
-    SourceFile: '$(System.DefaultWorkingDirectory)/_Derekholio.sr-bot/res/discord.example.json'
+    SourceFile: '$(System.DefaultWorkingDirectory)/res/discord.example.json'
     NewName: discord.json
     
 - task: PublishBuildArtifacts@1
