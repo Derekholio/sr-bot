@@ -70,7 +70,7 @@ export class SrBot {
                     .setFooter(`Last updated: ${new Date(this.statsGenerator.getLastResult().timestamp).toUTCString()}`)
                     .setAuthor('SR Bot', undefined, 'https://github.com/Derekholio/sr-bot');
 
-                this.sortPlayersBySR(players).forEach((player) => {
+                players.forEach((player) => {
                     embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
                 });
 
@@ -93,16 +93,8 @@ export class SrBot {
     }
 
     /**
-     * Sorts a list of players by SR descending
-     * @param {Players[]} players Players to sort
-     */
-    private sortPlayersBySR(players: Player[]) {
-        return players.sort((a: Player, b: Player) => (a.SR < b.SR) ? 1 : -1);
-    }
-
-    /**
      * Returns average SR for given players
-     * @param {*} players Players to calculate SR for
+     * @param {Player[]} players Players to calculate SR for
      */
     private calculateAverageSR(players: Player[]) {
         const playersCount = players.length;
