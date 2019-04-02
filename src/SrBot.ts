@@ -67,7 +67,7 @@ export class SrBot {
                 const embed = new Discord.RichEmbed()
                     .setTitle(`Leaderboard: ${requestedServer.teamName}`)
                     .setColor(HEX_EMBED_COLOR)
-                    .setFooter(`Last updated: ${new Date(this.statsGenerator.getLastResult().timestamp)}`)
+                    .setFooter(`Last updated: ${new Date(this.statsGenerator.getLastResult().timestamp).toUTCString()}`)
                     .setAuthor('SR Bot', undefined, 'https://github.com/Derekholio/sr-bot');
 
                 this.sortPlayersBySR(players).forEach((player) => {
