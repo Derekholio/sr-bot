@@ -1,0 +1,31 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- development
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- task: KirKone.fileoperations.rename.rename@0
+  displayName: 'rename: $(System.DefaultWorkingDirectory)/res/discord.example.json'
+  inputs:
+    SourceFile: '$(System.DefaultWorkingDirectory)/res/discord.example.json'
+    NewName: discord.json
+    
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)'
+
+- script: |
+    npm install
+    npm run build
+  displayName: 'npm install and build'
