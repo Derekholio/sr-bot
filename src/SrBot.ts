@@ -5,6 +5,9 @@ import {getJsonFile} from './utils/getJsonFile';
 import {StatsGenerator} from './StatsGenerator';
 import {log} from './utils/logger';
 
+/**
+ * Defines the Hex color used in the Discord embed message
+ */
 const HEX_EMBED_COLOR = 0x0019FF;
 
 export class SrBot {
@@ -61,12 +64,15 @@ export class SrBot {
                 message.channel.send('Sorry, this server has no players associated.');
             } else {
                 const players = requestedServer.players;
-                let embed = new Discord.RichEmbed()
+                const embed = new Discord.RichEmbed()
                     .setTitle(`Leaderboard: ${requestedServer.teamName}`)
                     .setColor(HEX_EMBED_COLOR)
-                    .setFooter(`Last updated: ${new Date(this.statsGenerator.getLastUpdate())}`)
+                    .setFooter(`Last updated: ${new Date(this.statsGenerator.getLastResult().timestamp)}`)
                     .setAuthor('SR Bot', undefined, 'https://github.com/Derekholio/sr-bot');
-                embed = this.appendPlayersToEmbed(players, embed);
+
+                this.sortPlayersBySR(players).forEach((player) => {
+                    embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
+                });
 
                 if (requestedServer.targetSR) {
                     const playersCount = players.length;
@@ -87,17 +93,11 @@ export class SrBot {
     }
 
     /**
-     * Returns a StringBuilder of the player's SR in descending order
-     * @param {Player[]} players List of players to build text from
-     * @param {Discord.RichEmbed} embed Existing embed to append to
+     * Sorts a list of players by SR descending
+     * @param {Players[]} players Players to sort
      */
-    private appendPlayersToEmbed(players: Player[], embed: Discord.RichEmbed) {
-        players.sort((a: Player, b: Player) => (a.SR < b.SR) ? 1 : -1)
-            .forEach((player) => {
-                embed = embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
-            });
-
-        return embed;
+    private sortPlayersBySR(players: Player[]) {
+        return players.sort((a: Player, b: Player) => (a.SR < b.SR) ? 1 : -1);
     }
 
     /**
