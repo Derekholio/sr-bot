@@ -66,47 +66,54 @@ export class SrBot {
     }
 
     /**
-     * Processes a Discord message
+     * Creates a discord embed message
      * @param {Discord.Message} message
      */
-    private processDefaultCommand(message: Discord.Message): void {
-        log('CLIENT', `New request from ${message.author.username}`, 'INFO');
+    private createEmbedMessage(message: Discord.Message): String | Discord.RichEmbed {
         const serverId = message.member.guild.id;
         const requestedServer = this.statsGenerator.getServer(serverId);
 
         if (!requestedServer) {
-            message.channel.send('Sorry, this server has no players associated.');
-            return;
-        } else {
-            const players = requestedServer.players;
-
-            // Embed Construction
-            const embed = new Discord.RichEmbed()
-                .setTitle(`Leaderboard: ${requestedServer.teamName}`)
-                .setColor(HEX_EMBED_COLOR)
-                .setFooter(`Last updated: ${new Date(this.statsGenerator.getLastResult().timestamp).toUTCString()}`)
-                .setAuthor('SR Bot', undefined, 'https://github.com/Derekholio/sr-bot');
-
-            players.forEach((player) => {
-                embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
-            });
-
-            // Team Stats Construction
-            const average = calculateAverageSR(players);
-            let teamStatsMessage = `Average SR: ${average}`;
-
-            if (requestedServer.targetSR) {
-                const playersCount = players.length;
-                const target = requestedServer.targetSR;
-                const max = Math.abs((average * playersCount) - (target * (playersCount + 1)));
-                teamStatsMessage += `\nTarget SR: ${target}\nMax add: ${max}`;
-            }
-            embed.addField('Team Stats', teamStatsMessage);
-
-            // Send message to discord
-            log('CLIENT', `Sent embed to chat: ${JSON.stringify(embed)}`, 'INFO');
-            message.channel.send({embed});
+            return 'Server not configured';
         }
+
+        const players = requestedServer.players;
+
+        // Embed Construction
+        const embed = new Discord.RichEmbed()
+            .setTitle(`Leaderboard: ${requestedServer.teamName}`)
+            .setColor(HEX_EMBED_COLOR)
+            .setFooter(`Last updated: ${new Date(this.statsGenerator.getLastResult().timestamp).toUTCString()}`)
+            .setAuthor('SR Bot', undefined, 'https://github.com/Derekholio/sr-bot');
+
+        players.forEach((player) => {
+            embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
+        });
+
+        // Team Stats Construction
+        const average = calculateAverageSR(players);
+        let teamStatsMessage = `Average SR: ${average}`;
+
+        if (requestedServer.targetSR) {
+            const playersCount = players.length;
+            const target = requestedServer.targetSR;
+            const max = Math.abs((average * playersCount) - (target * (playersCount + 1)));
+            teamStatsMessage += `\nTarget SR: ${target}\nMax add: ${max}`;
+        }
+        embed.addField('Team Stats', teamStatsMessage);
+
+        return embed;
+    }
+
+
+    /**
+     * Sends a messase to the provided discord channel.
+     * @param channel Discord message channel to send message to
+     * @param message Message to be sent
+     */
+    private sendToChannel(channel: Discord.TextChannel | Discord.DMChannel | Discord.GroupDMChannel, message: any) {
+        log('CLIENT', `Sending to chat: ${JSON.stringify(message)}`, 'INFO');
+        channel.send(message);
     }
 
     /**
@@ -118,24 +125,36 @@ export class SrBot {
         const server = this.statsGenerator.getServer(serverId);
         const [command, ...params] = [...message.content.split(' ').slice(1)];
 
+        log('CLIENT', `New request from ${message.author.username}: ${message.content}`, 'INFO');
+
+        if (!server) {
+            this.sendToChannel(message.channel, 'Server not configured');
+            return;
+        }
+
+        // If just !sr
         if (!command) {
-            this.processDefaultCommand(message);
+            this.sendToChannel(message.channel, this.createEmbedMessage(message));
             return;
         }
 
         switch (command.toUpperCase()) {
-            case COMMAND.TEAM:
+            case COMMAND.TEAM: {
+                let outMessage;
+
                 if (params[0]) {
                     const teamName = params.join(' ');
                     this.statsGenerator.updateServerProperty(serverId, 'teamName', teamName);
-                    message.channel.send(`Team name updated: ${teamName}`);
+                    outMessage = `Team name updated: ${teamName}`;
                 } else {
-                    message.channel.send(`Team name: ${server && server.teamName || 'NOT SET'}`);
+                    outMessage = `Team name: ${server && server.teamName || 'NOT SET'}`;
                 }
-                break;
 
+                this.sendToChannel(message.channel, outMessage);
+                break;
+            }
             default:
-                this.processDefaultCommand(message);
+                // command not found
                 break;
         }
     }
