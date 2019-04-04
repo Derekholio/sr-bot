@@ -155,7 +155,8 @@ export class SrBot {
         }
 
         // Non admin user attempted a set command
-        if (command.toUpperCase() === COMMAND.SET && this.isServerAdmin(serverId, message.author.username)) {
+        if (command.toUpperCase() === COMMAND.SET && !this.isServerAdmin(serverId, message.author.username)) {
+            log('CLIENT', `${message.author.username} attempted set command:  Not admin!`, 'WARN');
             return;
         }
 
