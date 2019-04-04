@@ -35,13 +35,13 @@ export class StatsGenerator {
      */
     public async fetchAndWrite(): Promise<void> {
         const start = Date.now();
-        log('UPDATE', `Begin update on ${this.configPath}`);
+        log('UPDATE', `Begin update on ${this.configPath}`, 'INFO');
 
         const results = await this.fetch();
         writeJsonFile(this.configPath, results);
 
         const end = Date.now();
-        log('UPDATE', `Finished update! Took ${(end - start) / 1000}s`);
+        log('UPDATE', `Finished update! Took ${(end - start) / 1000}s`, 'SUCCESS');
     }
 
     /**
@@ -116,7 +116,7 @@ export class StatsGenerator {
 
         const conditionalData: Partial<Player> = {};
         const player: OverwatchAPI.Profile|null = await this.getOverwatchProfileAsync(playerData.player, locale).catch(err => {
-            log('UPDATE ERROR', `${playerData.player} not found!`);
+            log('UPDATE', `${playerData.player} not found!`, 'WARN');
             return null;
         });
 

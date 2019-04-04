@@ -35,19 +35,21 @@ export class SrBot {
      * @param config Loaded dicord config file data
      */
     private initializeClient(config: DiscordConfig) {
-        log('CLIENT', 'Initializing Discord Client');
+        log('CLIENT', 'Initializing Discord Client', 'INFO');
         const client = new Discord.Client();
 
         client.login(config.token)
             .then(() => {
                 client.on('message', message => this.onClientMessageHandler(message));
-                log('CLIENT', 'Discord Client Successfully Initialized');
+                log('CLIENT', 'Discord Client Successfully Initialized', 'SUCCESS');
             })
             .catch(err => {
-                log('CLIENT ERROR', 'Error on client login');
+                log('CLIENT ERROR', err, 'ERROR');
                 throw new Error(err);
             });
 
+        client.on('disconnect', (e) => log('CLIENT', 'Disconnected!', 'WARN'));
+        client.on('error', (e) => log('CLIENT ERROR', e, 'ERROR'));
         return client;
     }
 
@@ -65,10 +67,10 @@ export class SrBot {
 
     /**
      * Processes a Discord message
-     * @param {*} message
+     * @param {Discord.Message} message
      */
     private processDefaultCommand(message: Discord.Message): void {
-        log('CLIENT', `New request from ${message.author.username}`);
+        log('CLIENT', `New request from ${message.author.username}`, 'INFO');
         const serverId = message.member.guild.id;
         const requestedServer = this.statsGenerator.getServer(serverId);
 
@@ -102,7 +104,7 @@ export class SrBot {
             embed.addField('Team Stats', teamStatsMessage);
 
             // Send message to discord
-            log('CLIENT', `Sent embed to chat: ${JSON.stringify(embed)}`);
+            log('CLIENT', `Sent embed to chat: ${JSON.stringify(embed)}`, 'INFO');
             message.channel.send({embed});
         }
     }
