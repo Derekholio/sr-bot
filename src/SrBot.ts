@@ -1,6 +1,6 @@
 import * as Discord from 'discord.js';
 import {getRankEmoji} from './utils/getRankEmoji';
-import {DiscordConfig, ConfigurationLoc, Server} from './types';
+import {DiscordConfig, ConfigurationLoc} from './types';
 import {getJsonFile} from './utils/getJsonFile';
 import {StatsGenerator} from './StatsGenerator';
 import {log} from './utils/logger';
@@ -11,8 +11,21 @@ import {calculateAverageSR} from './utils/calculateAverageSr';
  */
 enum COMMAND {
     BASE = '!SR',
+    TEAM = 'TEAM',
+    SET = 'SET'
+}
+
+/**
+ * Enum of updatable commands
+ */
+enum UPDATABLE_COMMAND {
     TEAM = 'TEAM'
 }
+
+/**
+ * List of channel admins
+ */
+const ADMINS = ['DEREKHOLIO', 'NOPANTSPIRATE'];
 
 /**
  * Defines the Hex color used in the Discord embed message
@@ -44,12 +57,12 @@ export class SrBot {
                 log('CLIENT', 'Discord Client Successfully Initialized', 'SUCCESS');
             })
             .catch(err => {
-                log('CLIENT ERROR', err, 'ERROR');
+                log('CLIENT', err, 'ERROR');
                 throw new Error(err);
             });
 
         client.on('disconnect', (e) => log('CLIENT', 'Disconnected!', 'WARN'));
-        client.on('error', (e) => log('CLIENT ERROR', e, 'ERROR'));
+        client.on('error', (e) => log('CLIENT', JSON.stringify(e), 'ERROR'));
         return client;
     }
 
@@ -138,25 +151,47 @@ export class SrBot {
             return;
         }
 
+        // Non admin user attempted a set command
+        if (command.toUpperCase() === COMMAND.SET && this.isServerAdmin(serverId, message.author.username)) {
+            return;
+        }
+
         switch (command.toUpperCase()) {
-            case COMMAND.TEAM: {
-                let outMessage;
-
-                if (params[0]) {
-                    const teamName = params.join(' ');
-                    this.statsGenerator.updateServerProperty(serverId, 'teamName', teamName);
-                    outMessage = `Team name updated: ${teamName}`;
-                } else {
-                    outMessage = `Team name: ${server && server.teamName || 'NOT SET'}`;
+            case COMMAND.SET: {
+                const settableParams = params.slice(1);
+                switch (params[0].toUpperCase()) {
+                    case UPDATABLE_COMMAND.TEAM: {
+                        const teamName = settableParams.join(' ');
+                        this.statsGenerator.updateServerProperty(serverId, 'teamName', teamName);
+                        this.sendToChannel(message.channel, `Team name updated: ${teamName}`);
+                        break;
+                    }
+                    default:
+                        // unsettable command
+                        break;
                 }
-
-                this.sendToChannel(message.channel, outMessage);
+                break;
+            }
+            case COMMAND.TEAM: {
+                this.sendToChannel(message.channel, `Team name: ${server && server.teamName || 'NOT SET'}`);
                 break;
             }
             default:
                 // command not found
                 break;
         }
+    }
+
+    /**
+     * Checks if a user is an admin.
+     * @param user Username
+     */
+    private isServerAdmin(serverId: string, user: string): boolean {
+        const server = this.statsGenerator.getServer(serverId);
+        if (!server){
+            return false;
+        }
+        return server.admins.map(user => user.toUpperCase()).includes(user.toUpperCase());
     }
 }
 
