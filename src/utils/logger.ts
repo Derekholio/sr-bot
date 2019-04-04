@@ -1,9 +1,9 @@
-export enum LogLevel {
-    'NORMAL',
-    'INFO',
-    'WARN',
-    'ERROR'
-}
+import 'colors';
+
+/**
+ * Different severity of logging.  Synonymous to console.log/info/war/error
+ */
+type LogLevel = 'NORMAL'|'INFO'|'WARN'|'ERROR'|'SUCCESS';
 
 /**
  * Logs a formatted message to the console
@@ -12,21 +12,25 @@ export enum LogLevel {
  * @param timestamp Log time with message
  * @param level Log Level (log, info, warn, error)
  */
-export function log(prefix: string, message: string, level?: LogLevel): void {
-    const out = `[${new Date().toLocaleTimeString()}] [${prefix}] ${message}`;
-
+export function log(prefix: string, message: any, level: LogLevel = 'NORMAL'): void {
+    let prefixColored = prefix;
     switch (level) {
-        case LogLevel.INFO:
-            console.info(out);
+        case 'SUCCESS':
+            prefixColored = prefix.green;
             break;
-        case LogLevel.WARN:
-            console.warn(out);
+        case 'INFO':
+            prefixColored = prefix.blue;
             break;
-        case LogLevel.ERROR:
-            console.error(out);
+        case 'WARN':
+            prefixColored = prefix.yellow;
+            break;
+        case 'ERROR':
+            prefixColored = prefix.red;
             break;
         default:
-            console.log(out);
+            prefixColored = prefix;
             break;
     }
+
+    console.log(`[${new Date().toLocaleTimeString()}] [${prefixColored}] ${message}`);
 }
