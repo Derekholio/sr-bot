@@ -19,7 +19,10 @@ enum COMMAND {
  * Enum of updatable commands
  */
 enum UPDATABLE_COMMAND {
-    TEAM = 'TEAM'
+    TEAM = 'TEAM',
+    REGION = 'REGION',
+    PLATFORM = 'PLATFORM'
+
 }
 
 /**
@@ -168,10 +171,19 @@ export class SrBot {
                 switch (params[0].toUpperCase()) {
                     case UPDATABLE_COMMAND.TEAM: {
                         // !sr set team ####
-
                         const teamName = settableParams.join(' ');
                         this.statsGenerator.updateServerProperty(serverId, 'teamName', teamName);
                         this.sendToChannel(message.channel, `Team name updated: ${teamName}`);
+                        break;
+                    }
+                    case UPDATABLE_COMMAND.REGION: {
+                        // !sr set region ####
+                        this.statsGenerator.updateServerProperty(serverId, 'region', settableParams[0].toLowerCase() as OverwatchAPI.REGION);
+                        break;
+                    }
+                    case UPDATABLE_COMMAND.PLATFORM: {
+                        // !sr set platform ####
+                        this.statsGenerator.updateServerProperty(serverId, 'platform', settableParams[0].toLowerCase() as OverwatchAPI.PLATFORM);
                         break;
                     }
                     default:
