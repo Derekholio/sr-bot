@@ -148,7 +148,7 @@ export class SrBot {
             return;
         }
 
-        // If just !sr
+        // If just !sr request
         if (!command) {
             this.sendToChannel(message.channel, this.createEmbedMessage(message));
             return;
@@ -156,15 +156,19 @@ export class SrBot {
 
         // Non admin user attempted a set command
         if (command.toUpperCase() === COMMAND.SET && !this.isServerAdmin(serverId, message.author.username)) {
-            log('CLIENT', `${message.author.username} attempted set command:  Not admin!`, 'WARN');
+            log('CLIENT', `Non-admin user ${message.author.username} attempted set command`, 'WARN');
             return;
         }
 
         switch (command.toUpperCase()) {
             case COMMAND.SET: {
+                // !sr set ####
+
                 const settableParams = params.slice(1);
                 switch (params[0].toUpperCase()) {
                     case UPDATABLE_COMMAND.TEAM: {
+                        // !sr set team ####
+
                         const teamName = settableParams.join(' ');
                         this.statsGenerator.updateServerProperty(serverId, 'teamName', teamName);
                         this.sendToChannel(message.channel, `Team name updated: ${teamName}`);
@@ -177,6 +181,8 @@ export class SrBot {
                 break;
             }
             case COMMAND.TEAM: {
+                // !sr team
+
                 this.sendToChannel(message.channel, `Team name: ${server && server.teamName || 'NOT SET'}`);
                 break;
             }
@@ -188,7 +194,7 @@ export class SrBot {
 
     /**
      * Checks if a user is an admin.
-     * @param user Username
+     * @param user Username to check
      */
     private isServerAdmin(serverId: string, user: string): boolean {
         const server = this.statsGenerator.getServer(serverId);

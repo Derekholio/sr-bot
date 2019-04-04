@@ -9,7 +9,6 @@ type LogLevel = 'NORMAL'|'INFO'|'WARN'|'ERROR'|'SUCCESS';
  * Logs a formatted message to the console
  * @param prefix Log Prefix [Prefix]
  * @param message Log Message
- * @param timestamp Log time with message
  * @param level Log Level (log, info, warn, error)
  */
 export function log(prefix: string, message: any, level: LogLevel = 'NORMAL'): void {
