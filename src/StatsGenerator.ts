@@ -6,16 +6,20 @@ import {log} from './utils/logger';
 import {sortBy} from './utils/sortBy';
 
 export class StatsGenerator {
-    private config: {path: string, data: OverwatchConfig};
+    /**
+     * Path to the loaded player file
+     */
+    private configPath: string;
+
+    /**
+     * Cached last result from fetch
+     */
     private lastResult: OverwatchConfig;
 
     constructor(configPath: string) {
-        this.config = {
-            path: configPath,
-            data: getJsonFile(configPath)
-        };
+        this.configPath = configPath;
 
-        this.lastResult = this.config.data;
+        this.lastResult = getJsonFile<OverwatchConfig>(configPath);
         this.fetchAndWrite();
     }
 
@@ -31,25 +35,25 @@ export class StatsGenerator {
      */
     public async fetchAndWrite(): Promise<void> {
         const start = Date.now();
-        log('UPDATE', `Begin update on ${this.config.path}`);
+        log('UPDATE', `Begin update on ${this.configPath}`, 'INFO');
 
         const results = await this.fetch();
-        writeJsonFile(this.config.path, results);
+        writeJsonFile(this.configPath, results);
 
         const end = Date.now();
-        log('UPDATE', `Finished update! Took ${(end - start) / 1000}s`);
+        log('UPDATE', `Finished update! Took ${(end - start) / 1000}s`, 'SUCCESS');
     }
 
     /**
      * Returns updated player information based on the provided player file
      */
     public async fetch(): Promise<OverwatchConfig> {
-        const updates: Server[] = await Promise.all(this.config.data.servers.map((server) => this.processServer(server)))
+        const updates: Server[] = await Promise.all(this.lastResult.servers.map((server) => this.processServer(server)))
             .catch((err) => {
                 throw new Error(err);
             });
 
-        return this.lastResult = {...this.config.data, servers: updates, timestamp: Date.now()};
+        return this.lastResult = {...this.lastResult, servers: updates, timestamp: Date.now()};
     }
 
     /**
@@ -61,6 +65,30 @@ export class StatsGenerator {
         }, timeout);
     }
 
+
+    /**
+     * Returns the Server config for a specific server id.
+     * @param id Server Id
+     */
+    public getServer(id: String): Server|undefined {
+        return this.lastResult.servers.find(server => server.id === id);
+    }
+
+    /**
+     * Updates a top level server property.  Not really intended to update Players info.
+     * @param serverId Id of server to update
+     * @param property Server property to update
+     * @param value New property value
+     */
+    public updateServerProperty<T extends keyof Server>(serverId: string, property: T, value: Server[T]) {
+        const serverReference = this.getServer(serverId);
+        if (serverReference) {
+            log('CLIENT', `Updating ${property}: ${value}`, 'INFO');
+            // Straight mutation.  It's dirty but works for now.
+            Object.assign(serverReference, {[property]: value});
+            writeJsonFile<OverwatchConfig>(this.configPath, this.lastResult);
+        }
+    }
 
     /**
      * Gets user data from overwatch API
@@ -89,7 +117,7 @@ export class StatsGenerator {
 
         const conditionalData: Partial<Player> = {};
         const player: OverwatchAPI.Profile|null = await this.getOverwatchProfileAsync(playerData.player, locale).catch(err => {
-            log('UPDATE', `${playerData.player} not found!`);
+            log('UPDATE', `${playerData.player} not found!`, 'WARN');
             return null;
         });
 
