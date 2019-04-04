@@ -63,6 +63,29 @@ export class StatsGenerator {
 
 
     /**
+     * Returns the Server config for a specific server id.
+     * @param id Server Id
+     */
+    public getServer(id: String): Server|undefined {
+        return this.lastResult.servers.find(server => server.id === id);
+    }
+
+    /**
+     * Updates a top level server property.  Not really intended to update Players info.
+     * @param serverId Id of server to update
+     * @param property Server property to update
+     * @param value New property value
+     */
+    public updateServerProperty<T extends keyof Server>(serverId: string, property: T, value: Server[T]) {
+        const serverReference = this.getServer(serverId);
+        if (serverReference) {
+            // Straight mutation.  It's dirty but works for now.
+            Object.assign(serverReference, {[property]: value});
+            writeJsonFile<OverwatchConfig>(this.config.path, this.lastResult);
+        }
+    }
+
+    /**
      * Gets user data from overwatch API
      * @param {string} player Player username
      */
@@ -89,7 +112,7 @@ export class StatsGenerator {
 
         const conditionalData: Partial<Player> = {};
         const player: OverwatchAPI.Profile|null = await this.getOverwatchProfileAsync(playerData.player, locale).catch(err => {
-            log('UPDATE', `${playerData.player} not found!`);
+            log('UPDATE ERROR', `${playerData.player} not found!`);
             return null;
         });
 
