@@ -11,7 +11,7 @@
     "start:static": "node dist/index.js",
     "check": "eslint src --ext .ts",
     "fix": "eslint src --ext .ts --fix",
-    "test": "mocha -r ts-node/register ./src/test/test.ts"
+    "test": "mocha -r ts-node/register ./src/test/*.ts"
   },
   "bin": {
     "sr-bot": "dist/index.js"

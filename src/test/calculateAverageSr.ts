@@ -1,8 +1,8 @@
 import {calculateAverageSR} from '../utils/calculateAverageSr';
 import {Player} from '../types';
-const expect = require('chai').expect;
+import * as chai from 'chai';
 
-describe('Calculate Average SR', () => {
+describe('calculateAverageSr', () => {
     it('should calculate average SR for players', () => {
         const expected = 2000;
         const players:Player[] = [
@@ -24,6 +24,6 @@ describe('Calculate Average SR', () => {
         ];
 
         const result = calculateAverageSR(players);
-        expect(result).to.be.equal(expected);
+        chai.expect(result).to.be.equal(expected);
     });
 });
