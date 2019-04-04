@@ -67,7 +67,7 @@ export class SrBot {
      * Processes a Discord message
      * @param {*} message
      */
-    private processTextChat(message: Discord.Message): void {
+    private processDefaultCommand(message: Discord.Message): void {
         log('CLIENT', `New request from ${message.author.username}`);
         const serverId = message.member.guild.id;
         const requestedServer = this.statsGenerator.getServer(serverId);
@@ -117,7 +117,7 @@ export class SrBot {
         const [command, ...params] = [...message.content.split(' ').slice(1)];
 
         if (!command) {
-            this.processTextChat(message);
+            this.processDefaultCommand(message);
             return;
         }
 
@@ -133,7 +133,7 @@ export class SrBot {
                 break;
 
             default:
-                this.processTextChat(message);
+                this.processDefaultCommand(message);
                 break;
         }
     }
