@@ -83,6 +83,7 @@ export class StatsGenerator {
     public updateServerProperty<T extends keyof Server>(serverId: string, property: T, value: Server[T]) {
         const serverReference = this.getServer(serverId);
         if (serverReference) {
+            log('CLIENT', `Updating ${property}: ${value}`, 'INFO');
             // Straight mutation.  It's dirty but works for now.
             Object.assign(serverReference, {[property]: value});
             writeJsonFile<OverwatchConfig>(this.configPath, this.lastResult);

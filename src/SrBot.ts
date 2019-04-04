@@ -178,12 +178,26 @@ export class SrBot {
                     }
                     case UPDATABLE_COMMAND.REGION: {
                         // !sr set region ####
-                        this.statsGenerator.updateServerProperty(serverId, 'region', settableParams[0].toLowerCase() as OverwatchAPI.REGION);
+                        const validRegions: OverwatchAPI.REGION[] = ['cn', 'eu', 'global', 'kr', 'us'];
+                        const region = settableParams[0].toLowerCase() as OverwatchAPI.REGION;
+                        if (!validRegions.includes(region)) {
+                            this.sendToChannel(message.channel, `Invalid region: ${region}.  Use ${validRegions.join('|')}`);
+                            return;
+                        }
+                        this.statsGenerator.updateServerProperty(serverId, 'region', region);
+                        this.sendToChannel(message.channel, `Region updated: ${region}`);
                         break;
                     }
                     case UPDATABLE_COMMAND.PLATFORM: {
                         // !sr set platform ####
-                        this.statsGenerator.updateServerProperty(serverId, 'platform', settableParams[0].toLowerCase() as OverwatchAPI.PLATFORM);
+                        const validPlatforms: OverwatchAPI.PLATFORM[] = ['pc', 'psn', 'xbl'];
+                        const platform = settableParams[0].toLowerCase() as OverwatchAPI.PLATFORM;
+                        if (!validPlatforms.includes(platform)) {
+                            this.sendToChannel(message.channel, `Invalid platform: ${platform}. Use ${validPlatforms.join('|')}`);
+                            return;
+                        }
+                        this.statsGenerator.updateServerProperty(serverId, 'platform', platform);
+                        this.sendToChannel(message.channel, `Platform updated: ${platform}`);
                         break;
                     }
                     default:
