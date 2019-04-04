@@ -158,7 +158,7 @@ export class SrBot {
         }
 
         // Non admin user attempted a set command
-        if (command.toUpperCase() === COMMAND.SET && !this.isServerAdmin(serverId, message.author.username)) {
+        if (command.toUpperCase() === COMMAND.SET && !this.isServerAdmin(serverId, message.author.username, message.member.permissions)) {
             log('CLIENT', `Non-admin user ${message.author.username} attempted set command`, 'WARN');
             return;
         }
@@ -222,12 +222,12 @@ export class SrBot {
      * Checks if a user is an admin.
      * @param user Username to check
      */
-    private isServerAdmin(serverId: string, user: string): boolean {
+    private isServerAdmin(serverId: string, user: string, permission: Discord.Permissions): boolean {
         const server = this.statsGenerator.getServer(serverId);
         if (!server){
             return false;
         }
-        return server.admins.map(user => user.toUpperCase()).includes(user.toUpperCase());
+        return server.admins.map(user => user.toUpperCase()).includes(user.toUpperCase()) || permission.has('ADMINISTRATOR') || permission.has('MANAGE_GUILD');
     }
 }
 
