@@ -26,11 +26,6 @@ enum UPDATABLE_COMMAND {
 }
 
 /**
- * List of channel admins
- */
-const ADMINS = ['DEREKHOLIO', 'NOPANTSPIRATE'];
-
-/**
  * Defines the Hex color used in the Discord embed message
  */
 const HEX_EMBED_COLOR = 0x0019FF;
@@ -158,7 +153,7 @@ export class SrBot {
         }
 
         // Non admin user attempted a set command
-        if (command.toUpperCase() === COMMAND.SET && !this.isServerAdmin(serverId, message.author.username)) {
+        if (command.toUpperCase() === COMMAND.SET && !this.isServerAdmin(message.member.permissions)) {
             log('CLIENT', `Non-admin user ${message.author.username} attempted set command`, 'WARN');
             return;
         }
@@ -222,12 +217,8 @@ export class SrBot {
      * Checks if a user is an admin.
      * @param user Username to check
      */
-    private isServerAdmin(serverId: string, user: string): boolean {
-        const server = this.statsGenerator.getServer(serverId);
-        if (!server){
-            return false;
-        }
-        return server.admins.map(user => user.toUpperCase()).includes(user.toUpperCase());
+    private isServerAdmin(permission: Discord.Permissions): boolean {
+        return permission.has('ADMINISTRATOR') || permission.has('MANAGE_GUILD');
     }
 }
 

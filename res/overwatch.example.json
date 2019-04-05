@@ -3,7 +3,6 @@
     "servers": [
         {
             "id": "DISCORD_SERVER_ID",
-            "admins": ["USERNAME", "USERNAME"],
             "platform": "PLATFORM",
             "region": "REGION",
             "players": [

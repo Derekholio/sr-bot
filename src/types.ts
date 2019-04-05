@@ -13,7 +13,6 @@ export type Player = {
 export interface Server extends Locale {
     id: string;
     players: Player[];
-    admins: string[];
     targetSR: number|null;
     teamName: string;
 }
