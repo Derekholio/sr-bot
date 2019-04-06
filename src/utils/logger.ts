@@ -1,4 +1,5 @@
 import 'colors';
+import {BugsnagClient} from './BugsnagClient';
 
 /**
  * Different severity of logging.  Synonymous to console.log/info/war/error
@@ -22,9 +23,11 @@ export function log(prefix: string, message: any, level: LogLevel = 'NORMAL'): v
             break;
         case 'WARN':
             prefixColored = prefix.yellow;
+            BugsnagClient.Instance().notify(message);
             break;
         case 'ERROR':
             prefixColored = prefix.red;
+            BugsnagClient.Instance().notify(message);
             break;
         default:
             prefixColored = prefix;
