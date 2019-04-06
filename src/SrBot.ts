@@ -224,7 +224,6 @@ export class SrBot {
         } else {
             this.sendToChannel(message.channel, `Invalid ${property}: ${updateValue}. Expecting ${Array.isArray(validation) ?
                 validation.join(' | ') : validation}`);
-            return;
         }
     }
 }
