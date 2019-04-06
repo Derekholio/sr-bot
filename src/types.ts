@@ -39,10 +39,15 @@ export type DiscordConfig = {
     token: string;
 }
 
+export type BugsnagConfig = {
+    api_key: string;
+}
+
 /**
  * Paths to various configuration files
  */
 export type ConfigurationLoc ={
     overwatch: string;
     discord: string;
+    bugsnag: string;
 }

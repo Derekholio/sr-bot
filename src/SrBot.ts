@@ -6,6 +6,7 @@ import {StatsGenerator} from './StatsGenerator';
 import {log} from './utils/logger';
 import {calculateAverageSR} from './utils/calculateAverageSr';
 import {validateInput} from './utils/validateInput';
+import {BugsnagClient} from './utils/BugsnagClient';
 
 /**
  * Enum of available commands
@@ -40,6 +41,7 @@ export class SrBot {
         this.statsGenerator.startTimer();
 
         this.client = this.initializeClient(getJsonFile(configs.discord));
+        BugsnagClient.Configure(getJsonFile(configs.bugsnag));
     }
 
     /**

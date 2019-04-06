@@ -16,7 +16,11 @@ const configs: ConfigurationLoc = {
     /**
      * Discord Configuration
      */
-    discord: path.resolve('./res/discord.json')
+    discord: path.resolve('./res/discord.json'),
+    /**
+     * Bugsnag Configuration
+     */
+    bugsnag: path.resolve('./res/bugsnag.json')
 };
 
 program
