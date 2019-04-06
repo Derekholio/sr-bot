@@ -23,7 +23,6 @@ export function log(prefix: string, message: any, level: LogLevel = 'NORMAL'): v
             break;
         case 'WARN':
             prefixColored = prefix.yellow;
-            BugsnagClient.Instance().notify(message);
             break;
         case 'ERROR':
             prefixColored = prefix.red;
