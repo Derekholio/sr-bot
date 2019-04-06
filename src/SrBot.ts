@@ -63,7 +63,7 @@ export class SrBot {
             });
 
         client.on('disconnect', e => log('CLIENT', 'Disconnected!', 'WARN'));
-        client.on('error', e => log('CLIENT', JSON.stringify(e), 'ERROR'));
+        client.on('error', e => log('CLIENT', e, 'ERROR'));
         client.on('reconnecting', ()=> log('CLIENT', 'Connecting...', 'ERROR'));
         client.on('resume', ()=> log('CLIENT', 'Connected', 'SUCCESS'));
 
