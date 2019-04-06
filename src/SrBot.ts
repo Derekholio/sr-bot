@@ -1,10 +1,11 @@
 import * as Discord from 'discord.js';
 import {getRankEmoji} from './utils/getRankEmoji';
-import {DiscordConfig, ConfigurationLoc} from './types';
+import {DiscordConfig, ConfigurationLoc, Server} from './types';
 import {getJsonFile} from './utils/getJsonFile';
 import {StatsGenerator} from './StatsGenerator';
 import {log} from './utils/logger';
 import {calculateAverageSR} from './utils/calculateAverageSr';
+import {validateInput} from './utils/validateInput';
 
 /**
  * Enum of available commands
@@ -59,8 +60,8 @@ export class SrBot {
                 throw new Error(err);
             });
 
-        client.on('disconnect', (e) => log('CLIENT', 'Disconnected!', 'WARN'));
-        client.on('error', (e) => log('CLIENT', JSON.stringify(e), 'ERROR'));
+        client.on('disconnect', e => log('CLIENT', 'Disconnected!', 'WARN'));
+        client.on('error', e => log('CLIENT', JSON.stringify(e), 'ERROR'));
         client.on('reconnecting', ()=> log('CLIENT', 'Connecting...', 'ERROR'));
         client.on('resume', ()=> log('CLIENT', 'Connected', 'SUCCESS'));
 
@@ -167,32 +168,19 @@ export class SrBot {
                     case UPDATABLE_COMMAND.TEAM: {
                         // !sr set team ####
                         const teamName = settableParams.join(' ');
-                        this.statsGenerator.updateServerProperty(serverId, 'teamName', teamName);
-                        this.sendToChannel(message.channel, `Team name updated: ${teamName}`);
+                        this.processUpdateCommand(message, 'teamName', teamName);
                         break;
                     }
                     case UPDATABLE_COMMAND.REGION: {
                         // !sr set region ####
-                        const validRegions: OverwatchAPI.REGION[] = ['cn', 'eu', 'global', 'kr', 'us'];
                         const region = settableParams[0].toLowerCase() as OverwatchAPI.REGION;
-                        if (!validRegions.includes(region)) {
-                            this.sendToChannel(message.channel, `Invalid region: ${region}.  Use ${validRegions.join('|')}`);
-                            return;
-                        }
-                        this.statsGenerator.updateServerProperty(serverId, 'region', region);
-                        this.sendToChannel(message.channel, `Region updated: ${region}`);
+                        this.processUpdateCommand(message, 'region', region, ['cn', 'eu', 'global', 'kr', 'us']);
                         break;
                     }
                     case UPDATABLE_COMMAND.PLATFORM: {
                         // !sr set platform ####
-                        const validPlatforms: OverwatchAPI.PLATFORM[] = ['pc', 'psn', 'xbl'];
                         const platform = settableParams[0].toLowerCase() as OverwatchAPI.PLATFORM;
-                        if (!validPlatforms.includes(platform)) {
-                            this.sendToChannel(message.channel, `Invalid platform: ${platform}. Use ${validPlatforms.join('|')}`);
-                            return;
-                        }
-                        this.statsGenerator.updateServerProperty(serverId, 'platform', platform);
-                        this.sendToChannel(message.channel, `Platform updated: ${platform}`);
+                        this.processUpdateCommand(message, 'platform', platform, ['pc', 'psn', 'xbl']);
                         break;
                     }
                     default:
@@ -219,6 +207,24 @@ export class SrBot {
      */
     private isServerAdmin(permission: Discord.Permissions): boolean {
         return permission.has('ADMINISTRATOR') || permission.has('MANAGE_GUILD');
+    }
+
+    /**
+     * Handles common tasks for when an update/set command is called.  This will validate the inputs and send a standardized message to chat.
+     * @param message Incoming Discord message
+     * @param property The server property to be updated or set
+     * @param updateValue The value of property to be updated or set
+     * @param validation Optional. Array of strings or single string of expected inputs. If none are matched an error message will be sent to chat.
+     */
+    private processUpdateCommand<K extends keyof Server>(message: Discord.Message, property: K, updateValue: Server[K], validation?: Server[K]|Server[K][]) {
+        const serverId = message.member.guild.id;
+        if (!validation || validateInput(updateValue, validation)) {
+            this.statsGenerator.updateServerProperty(serverId, property, updateValue);
+            this.sendToChannel(message.channel, `${property} updated: ${updateValue}`);
+        } else {
+            this.sendToChannel(message.channel, `Invalid ${property}: ${updateValue}. Expecting ${Array.isArray(validation) ?
+                validation.join(' | ') : validation}`);
+        }
     }
 }
 
