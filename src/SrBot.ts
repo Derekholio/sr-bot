@@ -7,6 +7,7 @@ import {log} from './utils/logger';
 import {calculateAverageSR} from './utils/calculateAverageSr';
 import {validateInput} from './utils/validateInput';
 import {BugsnagClient} from './utils/BugsnagClient';
+import {isValidUsername} from './utils/isValidUsername';
 
 /**
  * Enum of available commands
@@ -201,8 +202,9 @@ export class SrBot {
             }
             case COMMAND.ADD: {
                 const username = params[0];
-                if (this.isValidUsername(username)){
-                    this.addPlayer(message, username);
+                if (isValidUsername(username)){
+                    const serverId = message.member.guild.id;
+                    this.statsGenerator.addPlayer(serverId, username);
                     this.sendToChannel(message.channel, `Added ${username} to your roster`);
                 } else {
                     this.sendToChannel(message.channel, `Invalid username: ${username}`);
@@ -211,8 +213,9 @@ export class SrBot {
             }
             case COMMAND.REMOVE: {
                 const username = params[0];
-                if (this.isValidUsername(username)){
-                    this.removePlayer(message, username);
+                if (isValidUsername(username)){
+                    const serverId = message.member.guild.id;
+                    this.statsGenerator.removePlayer(serverId, username);
                     this.sendToChannel(message.channel, `Removed ${username} to your roster`);
                 } else {
                     this.sendToChannel(message.channel, `Invalid username: ${username}`);
@@ -223,28 +226,6 @@ export class SrBot {
                 // command not found
                 break;
         }
-    }
-
-    private addPlayer(message : Discord.Message, username: string) : boolean {
-        const serverId = message.member.guild.id;
-        return this.statsGenerator.addPlayer(serverId, username);
-    }
-
-    private removePlayer(message : Discord.Message, username : string) : boolean {
-        const serverId = message.member.guild.id;
-        return this.statsGenerator.removePlayer(serverId, username);
-    }
-
-    private isValidUsername(username: string): boolean {
-        // https://us.battle.net/support/en/article/26963
-        const [playerName, btag] = [...username.split('#')];
-        const doesNotStartWithNumberRegex = new RegExp(/^[A-Z]/i);
-        const usernameValidationRegex = new RegExp(/^\w{3,12}$/);
-        const btagIsNumbersRegex = new RegExp(/\d{4,5}/);
-
-        return usernameValidationRegex.test(playerName)
-        && doesNotStartWithNumberRegex.test(playerName)
-        && btagIsNumbersRegex.test(btag);
     }
 
     /**
