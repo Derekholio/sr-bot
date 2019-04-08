@@ -7,6 +7,7 @@ import {log} from './utils/logger';
 import {calculateAverageSR} from './utils/calculateAverageSr';
 import {validateInput} from './utils/validateInput';
 import {BugsnagClient} from './utils/BugsnagClient';
+import {isValidUsername} from './utils/isValidUsername';
 
 /**
  * Enum of available commands
@@ -14,7 +15,9 @@ import {BugsnagClient} from './utils/BugsnagClient';
 enum COMMAND {
     BASE = '!SR',
     TEAM = 'TEAM',
-    SET = 'SET'
+    SET = 'SET',
+    ADD = 'ADD',
+    REMOVE = 'REMOVE'
 }
 
 /**
@@ -195,6 +198,28 @@ export class SrBot {
                 // !sr team
 
                 this.sendToChannel(message.channel, `Team name: ${server && server.teamName || 'NOT SET'}`);
+                break;
+            }
+            case COMMAND.ADD: {
+                const username = params[0];
+                if (isValidUsername(username)){
+                    const serverId = message.member.guild.id;
+                    this.statsGenerator.addPlayer(serverId, username);
+                    this.sendToChannel(message.channel, `Added ${username} to your roster`);
+                } else {
+                    this.sendToChannel(message.channel, `Invalid username: ${username}`);
+                }
+                break;
+            }
+            case COMMAND.REMOVE: {
+                const username = params[0];
+                if (isValidUsername(username)){
+                    const serverId = message.member.guild.id;
+                    this.statsGenerator.removePlayer(serverId, username);
+                    this.sendToChannel(message.channel, `Removed ${username} to your roster`);
+                } else {
+                    this.sendToChannel(message.channel, `Invalid username: ${username}`);
+                }
                 break;
             }
             default:

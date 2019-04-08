@@ -74,6 +74,16 @@ export class StatsGenerator {
         return this.lastResult.servers.find(server => server.id === id);
     }
 
+    public getPlayer(serverId: string, username: string): Player|undefined {
+        const server = this.getServer(serverId);
+        if (server){
+            const player = server.players.find(p => p.player === username);
+            return player;
+        }
+
+        return undefined;
+    }
+
     /**
      * Updates a top level server property.  Not really intended to update Players info.
      * @param serverId Id of server to update
@@ -88,6 +98,41 @@ export class StatsGenerator {
             Object.assign(serverReference, {[property]: value});
             writeJsonFile<OverwatchConfig>(this.configPath, this.lastResult);
         }
+    }
+
+    public addPlayer(serverId: string, username: string) : boolean {
+        const server = this.getServer(serverId);
+        if (server){
+            const player = {SR: 0, player: username, private: false} as Player;
+            server.players.push(player);
+            log('CLIENT', `Added ${player.player}`, 'INFO');
+
+            writeJsonFile<OverwatchConfig>(this.configPath, this.lastResult);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public removePlayer(serverId: string, username: string) : boolean {
+        const server = this.getServer(serverId);
+        if (server){
+            const player = this.getPlayer(serverId, username);
+            if (player){
+                const index = server.players.indexOf(player);
+                if (index > -1){
+                    server.players.splice(index, 1);
+                    log('CLIENT', `Removed ${player.player}`, 'INFO');
+
+                    writeJsonFile<OverwatchConfig>(this.configPath, this.lastResult);
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
