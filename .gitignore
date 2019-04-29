@@ -3,3 +3,7 @@ node_modules
 .DS_Store
 config.json
 players.json
+overwatch.json
+discord.json
+.idea
+bugsnag.json

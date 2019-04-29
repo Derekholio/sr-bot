@@ -1,5 +1,7 @@
-import {between} from './between';
-
+/**
+ * Returns an image which corresponds to the provider SR
+ * @param sr Player SR
+ */
 export function getRankEmoji(sr: number) {
     if (between(sr, 0, 1499)) {
         return '<:ow_bronze:561738884409458701>';
@@ -15,7 +17,13 @@ export function getRankEmoji(sr: number) {
         return '<:ow_masters:561739221711192065>';
     } else if (between(sr, 4000, 5000)) {
         return '<:ow_grand_masters:561751122952323083>';
+    } else if (between(sr, 5001, Number.MAX_SAFE_INTEGER)) {
+        return ':poop:';
     } else {
         return null;
     }
+}
+
+function between(number: number, min: number, max: number) {
+    return number >= min && number <= max;
 }
