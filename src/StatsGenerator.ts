@@ -167,14 +167,14 @@ export class StatsGenerator {
         });
 
         if (player){
-            if (player.competitive.rank && player.competitive.rank > 0) {
+            if (player.private){
+                conditionalData.private = true;
+            } else if (player.competitive.rank && player.competitive.rank > 0){
                 conditionalData.SR = player.competitive.rank;
                 if (player.competitive.rank !== playerData.SR) {
                     const change = (playerData.SR - player.competitive.rank) * -1;
                     log('UPDATE', `${player.username} SR Change: ${change > 0 ? '+' : ''}${change}`);
                 }
-            } else {
-                conditionalData.private = true;
             }
         }
 
