@@ -103,7 +103,7 @@ export class StatsGenerator {
     public addPlayer(serverId: string, username: string) : boolean {
         const server = this.getServer(serverId);
         if (server){
-            const player = {SR: 0, player: username, private: false} as Player;
+            const player = {TankSR: 0, DamageSR: 0, SupportSR: 0, player: username, private: false} as Player;
             server.players.push(player);
             log('CLIENT', `Added ${player.player}`, 'INFO');
 
@@ -167,15 +167,21 @@ export class StatsGenerator {
         });
 
         if (player){
+            // console.log(player);
             if (player.private){
                 conditionalData.private = true;
-            } else if (player.competitive.rank && player.competitive.rank > 0){
-                conditionalData.SR = player.competitive.rank;
+            } else if ((player.competitive.tank.rank && player.competitive.tank.rank > 0)
+            || (player.competitive.damage.rank && player.competitive.damage.rank > 0)
+            || (player.competitive.support.rank && player.competitive.support.rank > 0)){
+                conditionalData.TankSR = player.competitive.tank.rank;
+                conditionalData.DamageSR = player.competitive.damage.rank;
+                conditionalData.SupportSR = player.competitive.support.rank;
                 conditionalData.private = false;
-                if (player.competitive.rank !== playerData.SR) {
-                    const change = (playerData.SR - player.competitive.rank) * -1;
-                    log('UPDATE', `${player.username} SR Change: ${change > 0 ? '+' : ''}${change}`);
-                }
+                console.log(conditionalData);
+                // if (player.competitive.rank !== playerData.SR) {
+                //     const change = (playerData.SR - player.competitive.rank) * -1;
+                //     log('UPDATE', `${player.username} SR Change: ${change > 0 ? '+' : ''}${change}`);
+                // }
             }
         }
 
@@ -191,7 +197,7 @@ export class StatsGenerator {
             return this.collatePlayerData(player, {platform: server.platform, region: server.region});
         }));
 
-        return {...server, players: sortBy<Player>(players, 'SR')};
+        return {...server, players: sortBy<Player>(players, 'DamageSR')};
     }
 }
 

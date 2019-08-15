@@ -106,21 +106,27 @@ export class SrBot {
             .setFooter(`Last updated: ${new Date(this.statsGenerator.getLastResult().timestamp).toUTCString()}`)
             .setAuthor('SR Bot', undefined, 'https://github.com/Derekholio/sr-bot');
 
+        embed.addField('Format:', 'Tank | Damage | Support');
+
         players.forEach((player) => {
-            embed.addField(player.player, `${player.SR}${player.private ? ' [PRIVATE]' : ''} ${getRankEmoji(player.SR)}`);
+            const tankText = `${player.TankSR || 'Unranked'} ${getRankEmoji(player.TankSR) || '-'}`;
+            const damageText = `${player.DamageSR || 'Unranked'} ${getRankEmoji(player.DamageSR) || '-'}`;
+            const supportText = `${player.SupportSR || 'Unranked'} ${getRankEmoji(player.SupportSR) || '-'}`;
+
+            embed.addField(player.player, `${tankText} | ${damageText} | ${supportText}`);
         });
 
         // Team Stats Construction
-        const average = calculateAverageSR(players);
-        let teamStatsMessage = `Average SR: ${average}`;
+        // const average = calculateAverageSR(players);
+        // let teamStatsMessage = `Average SR: ${average}`;
 
-        if (requestedServer.targetSR) {
-            const playersCount = players.length;
-            const target = requestedServer.targetSR;
-            const max = Math.abs((average * playersCount) - (target * (playersCount + 1)));
-            teamStatsMessage += `\nTarget SR: ${target}\nMax add: ${max}`;
-        }
-        embed.addField('Team Stats', teamStatsMessage);
+        // if (requestedServer.targetSR) {
+        //     const playersCount = players.length;
+        //     const target = requestedServer.targetSR;
+        //     const max = Math.abs((average * playersCount) - (target * (playersCount + 1)));
+        //     teamStatsMessage += `\nTarget SR: ${target}\nMax add: ${max}`;
+        // }
+        // embed.addField('Team Stats', teamStatsMessage);
 
         return embed;
     }

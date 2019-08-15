@@ -2,7 +2,9 @@
  * Player level configuration
  */
 export type Player = {
-    SR: number,
+    TankSR: number,
+    DamageSR: number,
+    SupportSR: number,
     player: string,
     private: boolean;
 }
