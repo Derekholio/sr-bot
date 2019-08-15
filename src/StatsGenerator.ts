@@ -167,7 +167,6 @@ export class StatsGenerator {
         });
 
         if (player){
-            // console.log(player);
             if (player.private){
                 conditionalData.private = true;
             } else if ((player.competitive.tank.rank && player.competitive.tank.rank > 0)
@@ -177,11 +176,6 @@ export class StatsGenerator {
                 conditionalData.DamageSR = player.competitive.damage.rank;
                 conditionalData.SupportSR = player.competitive.support.rank;
                 conditionalData.private = false;
-                console.log(conditionalData);
-                // if (player.competitive.rank !== playerData.SR) {
-                //     const change = (playerData.SR - player.competitive.rank) * -1;
-                //     log('UPDATE', `${player.username} SR Change: ${change > 0 ? '+' : ''}${change}`);
-                // }
             }
         }
 

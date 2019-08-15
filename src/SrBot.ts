@@ -4,7 +4,6 @@ import {DiscordConfig, ConfigurationLoc, Server} from './types';
 import {getJsonFile} from './utils/getJsonFile';
 import {StatsGenerator} from './StatsGenerator';
 import {log} from './utils/logger';
-import {calculateAverageSR} from './utils/calculateAverageSr';
 import {validateInput} from './utils/validateInput';
 import {BugsnagClient} from './utils/BugsnagClient';
 import {isValidUsername} from './utils/isValidUsername';
@@ -115,19 +114,6 @@ export class SrBot {
 
             embed.addField(player.player, `${tankText} | ${damageText} | ${supportText}`);
         });
-
-        // Team Stats Construction
-        // const average = calculateAverageSR(players);
-        // let teamStatsMessage = `Average SR: ${average}`;
-
-        // if (requestedServer.targetSR) {
-        //     const playersCount = players.length;
-        //     const target = requestedServer.targetSR;
-        //     const max = Math.abs((average * playersCount) - (target * (playersCount + 1)));
-        //     teamStatsMessage += `\nTarget SR: ${target}\nMax add: ${max}`;
-        // }
-        // embed.addField('Team Stats', teamStatsMessage);
-
         return embed;
     }
 
