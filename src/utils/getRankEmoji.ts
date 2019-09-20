@@ -3,7 +3,7 @@
  * @param sr Player SR
  */
 export function getRankEmoji(sr: number) {
-    if (between(sr, 0, 1499)) {
+    if (between(sr, 1, 1499)) {
         return '<:ow_bronze:561738884409458701>';
     } else if (between(sr, 1500, 1999)) {
         return '<:ow_silver:561738499611688971>';
