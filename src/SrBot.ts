@@ -208,7 +208,7 @@ export class SrBot {
                 if (isValidUsername(username)){
                     const serverId = message.member.guild.id;
                     this.statsGenerator.removePlayer(serverId, username);
-                    this.sendToChannel(message.channel, `Removed ${username} to your roster`);
+                    this.sendToChannel(message.channel, `Removed ${username} from your roster`);
                 } else {
                     this.sendToChannel(message.channel, `Invalid username: ${username}`);
                 }
