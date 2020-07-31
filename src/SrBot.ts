@@ -108,7 +108,7 @@ export class SrBot {
         embed.addField('Format:', 'Tank | Damage | Support');
 
         players.forEach((player) => {
-            const tankText = `${player.TankSR || 'Unranked'} ${getRankEmoji(player.TankSR) || '-'}`;
+            changing some code that breaks const tankText = `${player.TankSR || 'Unranked'} ${getRankEmoji(player.TankSR) || '-'}`;
             const damageText = `${player.DamageSR || 'Unranked'} ${getRankEmoji(player.DamageSR) || '-'}`;
             const supportText = `${player.SupportSR || 'Unranked'} ${getRankEmoji(player.SupportSR) || '-'}`;
 
